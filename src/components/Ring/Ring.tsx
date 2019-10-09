@@ -7,13 +7,9 @@ import React, {
   useRef
 } from "react";
 import { AppContext, QKLine, qk } from "src/ducks";
-// import * as params from "src/params";
 import * as colors from "@material-ui/core/colors";
 import makeStyles from "@material-ui/styles/makeStyles";
-// import TexLabel from "src/components/TexLabel";
 import useElementSize from "src/useElementSizeHook";
-// import Arrow from "src/components/Arrow";
-// import useScale from "src/useScale";
 
 const M = {
     top: 20,
@@ -23,11 +19,6 @@ const M = {
   },
   ROAD_WIDTH = 20,
   gTranslate = `translate(${M.left},${M.top})`;
-
-// const marginer = ({ width, height }: { width: number; height: number }) => ({
-//   width: Math.max(width - M.left - M.right, 0),
-//   height: Math.max(height - M.top - M.bottom, 0)
-// });
 
 const EMPTY = {};
 
@@ -51,8 +42,8 @@ export default () => {
                 className={classes.car}
                 rx="1"
                 ry="1"
-                width="5"
-                height="3"
+                width="3.5"
+                height="2"
               />
             ))}
           </g>

@@ -6,14 +6,14 @@ import React, {
   memo,
   useRef
 } from "react";
-import { AppContext, QKLine, qk } from "src/ducks";
-import * as params from "src/params";
+import { AppContext, getQK } from "src/ducks";
 import * as colors from "@material-ui/core/colors";
 import makeStyles from "@material-ui/styles/makeStyles";
 import TexLabel from "src/components/TexLabel";
 import useElementSize from "src/useElementSizeHook";
 import Arrow from "src/components/Arrow";
 import useScale from "src/useScale";
+import range from "lodash.range";
 
 const M = {
     top: 20,
@@ -35,12 +35,17 @@ export default () => {
     containerRef = useRef<HTMLDivElement>(),
     { width, height } = marginer(useElementSize(containerRef)),
     classes = useStyles(EMPTY),
-    kScale = useScale([0, width], [0, params.kj * 1.1], [width]),
-    qScale = useScale([height, 0], [0, params.q0 * 1.2], [height]),
+    kScale = useScale([0, width], [0, .5], [width]),
+    qScale = useScale([height, 0], [0, 2/3], [height]),
+    qk = getQK(state),
     QKPath = useMemo(() => {
-      let d = "M" + QKLine.map(([k, q]) => [kScale(k), qScale(q)]).join("L");
+      let d =
+        "M" +
+        range(0, state.kj, state.kj / 100)
+          .map(k => [kScale(k), qScale(qk(k))])
+          .join("L");
       return <path className={classes.path} d={d} />;
-    }, [width, height]);
+    }, [width, height, state.kj, state.k0, state.vf]);
   return (
     <div ref={containerRef} className={classes.container}>
       <svg className={classes.svg}>
@@ -66,7 +71,7 @@ export default () => {
               className={classes.axis}
               markerStart="url(#arrow)"
             />
-            <TexLabel dy={qScale(params.q0)-12} dx={-15} latexstring="q_0" />
+            <TexLabel dy={qScale(state.qMax) - 12} dx={-15} latexstring="q_0" />
             <TexLabel dx={-10} dy={-25} latexstring="q \; \text{veh/s}" />
           </g>
 
@@ -78,18 +83,15 @@ export default () => {
               markerEnd="url(#arrow)"
               className={classes.axis}
             />
-            {/* <path
-              d={`M0,0L${width},0`}
-              fill="none"
-              stroke="black"
-              markerEnd="url(#arrow)"
-              className={classes.axis}
-            /> */}
-            <TexLabel dx={kScale(params.k0)} dy={0} latexstring="k_0" />
+            <TexLabel
+              dx={kScale(state.qMax / state.vf)}
+              dy={0}
+              latexstring="k_0"
+            />
             <TexLabel
               dx={width - 70}
               dy={5}
-              latexstring="k \; \text{(veh/100 m)}"
+              latexstring="k \; \text{(veh/km)}"
             />
           </g>
         </g>

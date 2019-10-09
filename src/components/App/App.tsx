@@ -60,9 +60,42 @@ const Controls = () => {
         component="div"
         onChange={(e, payload: number) => dispatch({ type: AT.SET_K, payload })}
         value={state.k}
-        step={params.kj / 300}
+        step={1/100}
         min={0}
-        max={params.kj}
+        max={state.kj}
+      />
+      <div className={classes.sliderLabel} >
+        speed <TeX math="v_f \; \text{(m/s)}" />
+      </div>
+      <StyleSlider
+        component="div"
+        onChange={(e, payload: number) => dispatch({ type: AT.SET_VF, payload })}
+        value={state.vf}
+        step={.01}
+        min={2}
+        max={7}
+      />
+      <div className={classes.sliderLabel} >
+        critical density <TeX math="k_{0} \; \text{(veh/km)}" />
+      </div>
+      <StyleSlider
+        component="div"
+        onChange={(e, payload: number) => dispatch({ type: AT.SET_K0, payload })}
+        value={state.k0}
+        step={.003}
+        min={.05}
+        max={state.kj}
+      />
+      <div className={classes.sliderLabel} >
+        jam density <TeX math="k_{j} \; \text{(veh/km)}" />
+      </div>
+      <StyleSlider
+        component="div"
+        onChange={(e, payload: number) => dispatch({ type: AT.SET_KJ, payload })}
+        value={state.kj}
+        step={.003}
+        min={.1}
+        max={.5}
       />
     </Paper>
   );
