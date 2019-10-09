@@ -17,10 +17,10 @@ import {
 } from "src/ducks";
 import * as colors from "@material-ui/core/colors";
 import makeStyles from "@material-ui/styles/makeStyles";
-import { Grid } from "@material-ui/core";
-import SpaceTime from "src/components/SpaceTime";
-import QK from "src/components/QK";
 import { withStyles, Theme } from "@material-ui/core/styles";
+import { Grid } from "@material-ui/core";
+import Ring from "src/components/Ring";
+import QK from "src/components/QK";
 import TeX from "@matejmazur/react-katex";
 import "katex/dist/katex.min.css";
 import Slider from "@material-ui/core/Slider";
@@ -28,7 +28,7 @@ import Slider from "@material-ui/core/Slider";
 const StyleSlider = withStyles((theme: Theme) => ({
   root: {
     color: theme.palette.primary.main,
-    marginBottom: "5px",
+    marginBottom: "5px"
   }
 }))(Slider);
 
@@ -53,8 +53,8 @@ const Controls = () => {
       >
         {play ? "PAUSE" : "PLAY"}
       </Button>
-      <div className={classes.sliderLabel} style={{marginTop: 15}}>
-        density <TeX math="k \; \text{(veh/km)}" /> 
+      <div className={classes.sliderLabel} style={{ marginTop: 15 }}>
+        density <TeX math="k \; \text{(veh/km)}" />
       </div>
       <StyleSlider
         component="div"
@@ -63,19 +63,6 @@ const Controls = () => {
         step={params.kj / 300}
         min={0}
         max={params.kj}
-      />
-      <div className={classes.sliderLabel}>
-        time <TeX math="t \; (s)" />
-      </div>
-      <StyleSlider
-        component="div"
-        onChange={(e, payload: number) =>
-          dispatch({ type: AT.SET_TIME, payload })
-        }
-        value={state.time}
-        step={params.cycle / 300}
-        min={0}
-        max={params.cycle}
       />
     </Paper>
   );
@@ -92,8 +79,10 @@ const App: FunctionComponent<{}> = () => {
       alignItems="stretch"
       spacing={3}
     >
-      <Grid item className={classes.spaceTimeContainer}>
-        <SpaceTime />
+      <Grid item>
+        <div className={classes.ringContainer}>
+          <Ring />
+        </div>
       </Grid>
       <Grid item className={classes.qkContainer}>
         <QK />
@@ -130,8 +119,10 @@ const useStyles = makeStyles({
   qkContainer: {
     height: "250px"
   },
-  spaceTimeContainer: {
-    height: "450px"
+  ringContainer: {
+    width: '400px',
+    margin: 'auto'
+    // padding: "0 80px"
   },
   main: {
     maxWidth: "700px",
