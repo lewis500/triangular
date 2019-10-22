@@ -1,6 +1,8 @@
 import React, { Dispatch } from "react";
 import range from "lodash.range";
 import { createSelector } from "reselect";
+import * as params from "src/params";
+const { total } = params;
 
 const min = Math.min,
   max = Math.max;
@@ -18,6 +20,7 @@ export type State = {
   readonly kj: number;
   readonly vf: number;
   readonly k0: number;
+  readonly flowCount: number[];
 };
 
 export const getVK = createSelector<
@@ -44,7 +47,7 @@ export const getQK = createSelector<
 );
 
 const getCars = (k: number) =>
-  range(0, 1000, 1 / k).map(x => ({
+  range(0, total, 1 / k).map(x => ({
     id: x,
     x
   }));
@@ -53,10 +56,11 @@ export const initialState: State = {
   play: false,
   time: 0,
   vf: 4.5,
-  kj: 1/3,
-  k0: 1/9,
-  k: 1 / 9,
-  cars: getCars(1 / 9)
+  kj: 1 / 3,
+  k0: 1 / 9,
+  k: 1 / 10,
+  cars: getCars(1 / 10),
+  flowCount: [] as number[]
 };
 
 export enum ActionTypes {
@@ -65,7 +69,7 @@ export enum ActionTypes {
   SET_PLAY = "SET_PLAY",
   SET_VF = "SET_VF",
   SET_KJ = "SET_KJ",
-  SET_K0= "SET_K0"
+  SET_K0 = "SET_K0"
 }
 
 type Action =
@@ -94,16 +98,42 @@ type Action =
       payload: boolean;
     };
 
+// const total = params.total;
 export const reducer: React.Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case ActionTypes.TICK:
-      let dx = action.payload * getVK(state)(state.k);
+      let crossing = false;
+      const dx = action.payload * getVK(state)(state.k),
+        cars = state.cars.map(car => {
+          let x = car.x + dx;
+          if (x > total && car.x < total) crossing = true;
+          x = x % total;
+          return {
+            id: car.id,
+            x
+          };
+        }),
+        time = state.time + action.payload;
+      // let flowCount = state.flowCount;
+      let newFlowCount = crossing
+        ? [...state.flowCount, time]
+        : state.flowCount;
+      let removal = false;
+      for (let d of newFlowCount) {
+        if (d < time - params.flowDuration) removal = true;
+      }
+      if (removal)
+        newFlowCount = newFlowCount.filter(d => d > time - params.flowDuration);
+
       return {
         ...state,
-        cars: state.cars.map(car => ({
-          id: car.id,
-          x: (car.x + dx) % 1000
-        }))
+        cars,
+        time,
+        flowCount: newFlowCount
+        // flowCount: (crossing
+        //   ? [...state.flowCount, time]
+        //   : state.flowCount
+        // ).filter(d => d > time - params.flowDuration)
       };
     case ActionTypes.SET_K0:
       return {

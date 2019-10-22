@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
-import { useTimer } from "src/useTimerHook";
+import { useTimer, useInterval } from "src/useTimerHook";
 import * as params from "src/params";
 import {
   AppContext,
@@ -24,6 +24,7 @@ import QK from "src/components/QK";
 import TeX from "@matejmazur/react-katex";
 import "katex/dist/katex.min.css";
 import Slider from "@material-ui/core/Slider";
+import { style } from "@material-ui/system";
 
 const StyleSlider = withStyles((theme: Theme) => ({
   root: {
@@ -41,6 +42,14 @@ const Controls = () => {
     dt /= params.delta;
     dispatch({ type: AT.TICK, payload: dt });
   }, play);
+
+  // useInterval(
+  //   () => {
+  //     dispatch({ type: AT.REMOVE });
+  //   },
+  //   params.delta * 10000,
+  //   state.play
+  // );
 
   return (
     <Paper elevation={2} className={classes.paper}>
@@ -60,42 +69,48 @@ const Controls = () => {
         component="div"
         onChange={(e, payload: number) => dispatch({ type: AT.SET_K, payload })}
         value={state.k}
-        step={1/100}
+        step={1 / 100}
         min={0}
         max={state.kj}
       />
-      <div className={classes.sliderLabel} >
+      <div className={classes.sliderLabel}>
         speed <TeX math="v_f \; \text{(m/s)}" />
       </div>
       <StyleSlider
         component="div"
-        onChange={(e, payload: number) => dispatch({ type: AT.SET_VF, payload })}
+        onChange={(e, payload: number) =>
+          dispatch({ type: AT.SET_VF, payload })
+        }
         value={state.vf}
-        step={.01}
+        step={0.01}
         min={2}
         max={7}
       />
-      <div className={classes.sliderLabel} >
+      <div className={classes.sliderLabel}>
         critical density <TeX math="k_{0} \; \text{(veh/km)}" />
       </div>
       <StyleSlider
         component="div"
-        onChange={(e, payload: number) => dispatch({ type: AT.SET_K0, payload })}
+        onChange={(e, payload: number) =>
+          dispatch({ type: AT.SET_K0, payload })
+        }
         value={state.k0}
-        step={.003}
-        min={.05}
+        step={0.003}
+        min={0.05}
         max={state.kj}
       />
-      <div className={classes.sliderLabel} >
+      <div className={classes.sliderLabel}>
         jam density <TeX math="k_{j} \; \text{(veh/km)}" />
       </div>
       <StyleSlider
         component="div"
-        onChange={(e, payload: number) => dispatch({ type: AT.SET_KJ, payload })}
+        onChange={(e, payload: number) =>
+          dispatch({ type: AT.SET_KJ, payload })
+        }
         value={state.kj}
-        step={.003}
-        min={.1}
-        max={.5}
+        step={0.003}
+        min={0.1}
+        max={0.5}
       />
     </Paper>
   );
@@ -105,25 +120,17 @@ const EMPTY = {};
 const App: FunctionComponent<{}> = () => {
   const classes = useStyles(EMPTY);
   return (
-    <Grid
-      direction="column"
-      container
-      className={classes.main}
-      alignItems="stretch"
-      spacing={3}
-    >
-      <Grid item>
+    <div className={classes.main}>
+      <div className={classes.row}>
         <div className={classes.ringContainer}>
           <Ring />
         </div>
-      </Grid>
-      <Grid item className={classes.qkContainer}>
-        <QK />
-      </Grid>
-      <Grid item>
-        <Controls />
-      </Grid>
-    </Grid>
+        <div className={classes.qkContainer}>
+          <QK />
+        </div>
+      </div>
+      <Controls />
+    </div>
   );
 };
 
@@ -152,14 +159,19 @@ const useStyles = makeStyles({
   qkContainer: {
     height: "250px"
   },
+  row: {
+    display: "flex",
+    flexDirection: "row"
+  },
   ringContainer: {
-    width: '400px',
-    margin: 'auto'
-    // padding: "0 80px"
+    width: "400px"
   },
   main: {
-    maxWidth: "700px",
-    margin: "0 auto"
+    maxWidth: "1000px",
+    margin: "0 auto",
+    display: "flex",
+    flexDirection: "column"
+    // alignItems: "center"
   },
   sliderLabel: {
     fontSize: "14px",
